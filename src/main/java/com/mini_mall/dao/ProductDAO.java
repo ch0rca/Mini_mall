@@ -14,7 +14,7 @@ public class ProductDAO {
 
     // 상품 목록 조회
     public List<ProductDTO> findAllProducts() {
-        String sql = "SELECT product_id, product_name, price, stock FROM Product";
+        String sql = "SELECT product_id, product_name, price, stock, is_active FROM Product";
 
         try (Connection con = DBConnection.getConnection();
              PreparedStatement pstmt = con.prepareStatement(sql);
@@ -26,7 +26,8 @@ public class ProductDAO {
                     rs.getInt("product_id"),
                     rs.getString("product_name"),
                     rs.getInt("price"),
-                    rs.getInt("stock")
+                    rs.getInt("stock"),
+                    rs.getBoolean("is_active")
                 ));
             }
             return products;
@@ -39,7 +40,7 @@ public class ProductDAO {
 
     // 상품 상세 조회
     public ProductDTO findByProductId(int productId) {
-        String sql = "SELECT product_id, product_name, price, stock FROM Product WHERE product_id = ?";
+        String sql = "SELECT product_id, product_name, price, stock, is_active FROM Product WHERE product_id = ?";
 
         try (Connection con = DBConnection.getConnection();
              PreparedStatement pstmt = con.prepareStatement(sql)) {
@@ -52,7 +53,8 @@ public class ProductDAO {
                     rs.getInt("product_id"),
                     rs.getString("product_name"),
                     rs.getInt("price"),
-                    rs.getInt("stock")
+                    rs.getInt("stock"),
+                    rs.getBoolean("is_active")
                 );
             }
 
@@ -101,9 +103,9 @@ public class ProductDAO {
         }
     }
 
-    // 상품 삭제
-    public int deleteProduct(int productId) {
-        String sql = "DELETE FROM Product WHERE product_id = ?";
+    // 상품 판매중지
+    public int deactivateProduct(int productId) {
+        String sql = "UPDATE Product SET is_active = 0 WHERE product_id = ?";
 
         try (Connection con = DBConnection.getConnection();
              PreparedStatement pstmt = con.prepareStatement(sql)) {

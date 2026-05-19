@@ -12,7 +12,8 @@ CREATE TABLE Product (
     product_id INT AUTO_INCREMENT PRIMARY KEY,
     product_name VARCHAR(100) NOT NULL,
     price INT NOT NULL,
-    stock INT NOT NULL
+    stock INT NOT NULL,
+    is_active TINYINT NOT NULL DEFAULT 1
 );
 
 CREATE TABLE Orders (

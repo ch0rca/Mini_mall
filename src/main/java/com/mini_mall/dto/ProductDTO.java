@@ -6,14 +6,22 @@ public class ProductDTO {
     private String productName;
     private int price;
     private int stock;
+    private boolean active;
 
-    public ProductDTO() {}
+    public ProductDTO() {
+        this.active = true;
+    }
 
     public ProductDTO(int productId, String productName, int price, int stock) {
+        this(productId, productName, price, stock, true);
+    }
+
+    public ProductDTO(int productId, String productName, int price, int stock, boolean active) {
         this.productId = productId;
         this.productName = productName;
         this.price = price;
         this.stock = stock;
+        this.active = active;
     }
 
     public int getProductId() {
@@ -46,5 +54,13 @@ public class ProductDTO {
 
     public void setStock(int stock) {
         this.stock = stock;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 }
