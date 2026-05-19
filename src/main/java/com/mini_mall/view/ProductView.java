@@ -3,6 +3,7 @@ package com.mini_mall.view;
 import com.mini_mall.dto.ProductDTO;
 import com.mini_mall.dto.UserDTO;
 import com.mini_mall.service.ProductService;
+import com.mini_mall.service.CartService;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -12,19 +13,14 @@ import java.util.List;
 
 public class ProductView extends JFrame {
 
-    private final ProductService productService =
-            new ProductService();
+    private final ProductService productService = new ProductService();
+    private final CartService cartService = new CartService();
 
     private final UserDTO loginUser;
 
-    private static final Font TITLE_FONT =
-            new Font("Dialog", Font.BOLD, 20);
-
-    private static final Font LABEL_FONT =
-            new Font("Dialog", Font.PLAIN, 13);
-
-    private static final Font VALUE_FONT =
-            new Font("Dialog", Font.BOLD, 13);
+    private static final Font TITLE_FONT = new Font("Dialog", Font.BOLD, 20);
+    private static final Font LABEL_FONT = new Font("Dialog", Font.PLAIN, 13);
+    private static final Font VALUE_FONT = new Font("Dialog", Font.BOLD, 13);
 
     private final DefaultTableModel tableModel =
             new DefaultTableModel(
@@ -47,17 +43,11 @@ public class ProductView extends JFrame {
             };
 
     private final JTable productTable = new JTable(tableModel);
-
     private final JTextField productIdField = new JTextField(10);
-
     private final JLabel idValueLabel = new JLabel("-");
-
     private final JLabel nameValueLabel = new JLabel("-");
-
     private final JLabel priceValueLabel = new JLabel("-");
-
     private final JLabel stockValueLabel = new JLabel("-");
-
     private final JLabel statusValueLabel = new JLabel("-");
 
     public ProductView(UserDTO user) {
@@ -158,6 +148,89 @@ public class ProductView extends JFrame {
         );
 
         searchPanel.add(refreshButton);
+        
+     // 장바구니 담기 버튼
+        JButton addCartButton = new JButton("장바구니 담기");
+
+        addCartButton.addActionListener(e -> {
+
+            int row = productTable.getSelectedRow();
+
+            // 상품 선택 안 한 경우
+            if(row == -1) {
+                JOptionPane.showMessageDialog(
+                        this,
+                        "상품을 선택하세요."
+                );
+                return;
+            }
+
+            // 상품 ID 가져오기
+            int productId =
+                    Integer.parseInt(
+                            tableModel.getValueAt(row, 0)
+                                    .toString()
+                    );
+
+            // 상품 조회
+            ProductDTO product =
+                    productService.getProductDetail(
+                            productId
+                    );
+
+            // 수량 입력
+            String input =
+                    JOptionPane.showInputDialog(
+                            this,
+                            "수량 입력"
+                    );
+
+            if(input == null) {
+                return;
+            }
+
+            int quantity;
+
+            try {
+
+                quantity = Integer.parseInt(input);
+
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(
+                        this,
+                        "숫자를 입력하세요."
+                );
+                return;
+            }
+
+            // 재고 검사
+            if(quantity > product.getStock()) {
+                JOptionPane.showMessageDialog(
+                        this,
+                        "재고가 부족합니다."
+                );
+                return;
+            }
+
+            // 장바구니 추가
+            cartService.addToCart(product, quantity);
+
+            JOptionPane.showMessageDialog(
+                    this,
+                    "장바구니에 추가되었습니다."
+            );
+        });
+
+        searchPanel.add(addCartButton);
+
+        // 장바구니 보기 버튼
+        JButton cartViewButton = new JButton("장바구니");
+
+        cartViewButton.addActionListener(e -> {
+            new CartView(cartService);
+        });
+
+        searchPanel.add(cartViewButton);
 
         JButton logoutButton = new JButton("로그아웃");
 
