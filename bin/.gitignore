@@ -1,6 +1,5 @@
 # 컴파일된 클래스 파일들
 *.class
-*.jar
 
 # 로그 파일
 *.log
@@ -18,8 +17,11 @@ out/
 .DS_Store
 Thumbs.db
 
-
-# Eclipse
-.project
+.metadata/
 .classpath
+.project
 .settings/
+*.launch
+bin/
+
+.jar
