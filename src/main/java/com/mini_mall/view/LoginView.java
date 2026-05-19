@@ -1,3 +1,4 @@
+// LoginView.java
 package com.mini_mall.view;
 
 import com.mini_mall.dto.UserDTO;
@@ -8,19 +9,16 @@ import java.awt.*;
 
 public class LoginView extends JFrame {
 
-    private UserService userService = new UserService();
+    private final UserService userService =
+            new UserService();
 
     public LoginView() {
 
         setTitle("로그인");
-
         setSize(300, 200);
-
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
         setLocationRelativeTo(null);
 
-        // 패널
         JPanel panel = new JPanel(new GridLayout(4, 2, 5, 5));
 
         // 아이디
@@ -35,7 +33,6 @@ public class LoginView extends JFrame {
         JButton loginBtn = new JButton("로그인");
         JButton registerBtn = new JButton("회원가입");
 
-        // 컴포넌트 추가
         panel.add(idLabel);
         panel.add(idField);
 
@@ -45,34 +42,29 @@ public class LoginView extends JFrame {
         panel.add(loginBtn);
         panel.add(registerBtn);
 
-        // 로그인 버튼 이벤트
+        // 로그인 버튼
         loginBtn.addActionListener(e -> {
 
             String loginId = idField.getText();
+            String password = new String(pwField.getPassword());
 
-            String password =
-                    new String(pwField.getPassword());
-
-            UserDTO user =
-                    userService.login(loginId, password);
+            UserDTO user = userService.login(loginId, password);
 
             // 로그인 성공
             if (user != null) {
-
                 JOptionPane.showMessageDialog(
                         this,
                         user.getName() + "님 환영합니다!"
                 );
-
                 dispose();
-
-                new MainView(user);
+                
+                // 상품 목록 화면 이동
+                new ProductView(user).setVisible(true);
 
             }
 
             // 로그인 실패
             else {
-
                 JOptionPane.showMessageDialog(
                         this,
                         "아이디 또는 비밀번호가 틀렸습니다.",
@@ -82,16 +74,13 @@ public class LoginView extends JFrame {
             }
         });
 
-        // 회원가입 버튼 이벤트
+        // 회원가입 버튼
         registerBtn.addActionListener(e -> {
-
             dispose();
-
-            new RegisterView();
+            new RegisterView().setVisible(true);
         });
 
         add(panel);
-
         setVisible(true);
     }
 }
