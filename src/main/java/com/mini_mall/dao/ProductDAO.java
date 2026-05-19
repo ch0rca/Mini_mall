@@ -61,4 +61,59 @@ public class ProductDAO {
         }
         return null;
     }
+
+    // 상품 등록
+    public int insertProduct(ProductDTO product) {
+        String sql = "INSERT INTO Product (product_name, price, stock) VALUES (?, ?, ?)";
+
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement pstmt = con.prepareStatement(sql)) {
+
+            pstmt.setString(1, product.getProductName());
+            pstmt.setInt(2, product.getPrice());
+            pstmt.setInt(3, product.getStock());
+
+            return pstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+    // 상품 수정
+    public int updateProduct(ProductDTO product) {
+        String sql = "UPDATE Product SET product_name = ?, price = ?, stock = ? WHERE product_id = ?";
+
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement pstmt = con.prepareStatement(sql)) {
+
+            pstmt.setString(1, product.getProductName());
+            pstmt.setInt(2, product.getPrice());
+            pstmt.setInt(3, product.getStock());
+            pstmt.setInt(4, product.getProductId());
+
+            return pstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+    // 상품 삭제
+    public int deleteProduct(int productId) {
+        String sql = "DELETE FROM Product WHERE product_id = ?";
+
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement pstmt = con.prepareStatement(sql)) {
+
+            pstmt.setInt(1, productId);
+            return pstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
 }
