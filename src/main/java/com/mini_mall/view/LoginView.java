@@ -57,8 +57,12 @@ public class LoginView extends JFrame {
                 );
                 dispose();
                 
-                // 상품 목록 화면 이동
-                new ProductView(user).setVisible(true);
+                // 권한에 따라 화면 이동
+                if ("ADMIN".equals(user.getRole())) {
+                    new AdminView(user).setVisible(true);
+                } else {
+                    new ProductView(user).setVisible(true);
+                }
 
             }
 
