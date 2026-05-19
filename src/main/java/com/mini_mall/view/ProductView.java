@@ -102,9 +102,7 @@ public class ProductView extends JFrame {
     private JPanel createTopPanel() {
 
         JPanel topPanel = new JPanel(new BorderLayout(8, 8));
-
         JPanel titlePanel = new JPanel(new BorderLayout());
-
         JLabel titleLabel = new JLabel("상품 목록");
 
         titleLabel.setFont(TITLE_FONT);

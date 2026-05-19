@@ -9,8 +9,7 @@ import java.awt.*;
 
 public class LoginView extends JFrame {
 
-    private final UserService userService =
-            new UserService();
+    private final UserService userService = new UserService();
 
     public LoginView() {
 
