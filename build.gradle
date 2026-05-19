@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'war'
 }
 
 group = 'com.mini_mall'
@@ -16,6 +17,7 @@ dependencies {
     testImplementation platform('org.junit:junit-bom:6.0.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    providedCompile 'javax.servlet:javax.servlet-api:4.0.1'
 }
 
 test {
