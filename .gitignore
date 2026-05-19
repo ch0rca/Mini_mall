@@ -1,0 +1,18 @@
+# 컴파일된 클래스 파일들
+*.class
+
+# 로그 파일
+*.log
+
+# Gradle 빌드 결과물 및 설정 (가장 중요)
+.gradle/
+build/
+
+# IntelliJ IDEA 설정 파일 (개인 설정이라 올리면 안 됨)
+.idea/
+*.iml
+out/
+
+# OS 관련 스팸 파일
+.DS_Store
+Thumbs.db
