@@ -23,3 +23,5 @@ Thumbs.db
 .project
 .classpath
 .settings/
+
+src/main/java/db.properties
