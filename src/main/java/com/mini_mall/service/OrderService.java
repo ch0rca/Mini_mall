@@ -41,6 +41,14 @@ public class OrderService {
         return orderDAO.findOrderItemsByOrderId(orderId);
     }
 
+    // 주문 상태 변경 (관리자만)
+    public boolean updateOrderStatus(UserDTO user, int orderId, String status) {
+        if (!isAdmin(user)) {
+            return false;
+        }
+        return orderDAO.updateOrderStatus(orderId, status) == 1;
+    }
+
     private boolean isAdmin(UserDTO user) {
         return user != null && "ADMIN".equals(user.getRole());
     }

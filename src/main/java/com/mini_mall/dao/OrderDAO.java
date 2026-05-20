@@ -175,4 +175,21 @@ public class OrderDAO {
             return null;
         }
     }
+
+    // 주문 상태 변경 (관리자용)
+    public int updateOrderStatus(int orderId, String status) {
+        String sql = "UPDATE Orders SET status = ? WHERE order_id = ?";
+
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement pstmt = con.prepareStatement(sql)) {
+
+            pstmt.setString(1, status);
+            pstmt.setInt(2, orderId);
+            return pstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
 }

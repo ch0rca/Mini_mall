@@ -7,6 +7,7 @@ import com.mini_mall.service.OrderService;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -24,6 +25,13 @@ public class OrderAdminPanel extends JPanel {
 
     private final OrderService orderService = new OrderService();
     private final UserDTO adminUser;
+
+    private static final String[] ORDER_STATUSES = {
+        "주문완료",
+        "배송중",
+        "배송완료",
+        "주문취소"
+    };
 
     private final DefaultTableModel orderTableModel = new DefaultTableModel(
         new Object[]{"주문ID", "회원ID", "회원명", "주문일", "상태"}, 0
@@ -45,6 +53,8 @@ public class OrderAdminPanel extends JPanel {
     };
     private final JTable orderItemTable = new JTable(orderItemTableModel);
 
+    private final JComboBox<String> statusCombo = new JComboBox<>(ORDER_STATUSES);
+
     public OrderAdminPanel(UserDTO adminUser) {
         this.adminUser = adminUser;
 
@@ -54,9 +64,16 @@ public class OrderAdminPanel extends JPanel {
         JPanel header = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
         JLabel hintLabel = new JLabel("주문을 선택하면 해당 주문의 상품 목록이 표시됩니다.");
         JButton refreshButton = new JButton("주문 새로고침");
-        refreshButton.addActionListener(e -> loadOrders());
+        refreshButton.addActionListener(e -> loadOrders(null));
         header.add(hintLabel);
         header.add(refreshButton);
+
+        JLabel statusLabel = new JLabel("상태 변경");
+        JButton updateButton = new JButton("변경");
+        updateButton.addActionListener(e -> handleUpdateStatus());
+        header.add(statusLabel);
+        header.add(statusCombo);
+        header.add(updateButton);
 
         orderTable.setRowHeight(28);
         orderTable.setAutoCreateRowSorter(true);
@@ -82,6 +99,7 @@ public class OrderAdminPanel extends JPanel {
                 Integer orderId = getSelectedOrderId();
                 if (orderId != null) {
                     loadOrderItems(orderId);
+                    setStatusSelection(getSelectedOrderStatus());
                 }
             }
         });
@@ -96,10 +114,10 @@ public class OrderAdminPanel extends JPanel {
         add(header, BorderLayout.NORTH);
         add(splitPane, BorderLayout.CENTER);
 
-        loadOrders();
+        loadOrders(null);
     }
 
-    private void loadOrders() {
+    private void loadOrders(Integer selectOrderId) {
         List<OrderSummaryDTO> orders = orderService.getOrderList(adminUser);
         orderTableModel.setRowCount(0);
         orderItemTableModel.setRowCount(0);
@@ -121,8 +139,14 @@ public class OrderAdminPanel extends JPanel {
         }
 
         if (!orders.isEmpty()) {
-            orderTable.setRowSelectionInterval(0, 0);
-            loadOrderItems(orders.get(0).getOrderId());
+            int rowToSelect = 0;
+            if (selectOrderId != null) {
+                Integer foundRow = findRowByOrderId(selectOrderId);
+                if (foundRow != null) {
+                    rowToSelect = foundRow;
+                }
+            }
+            orderTable.setRowSelectionInterval(rowToSelect, rowToSelect);
         }
     }
 
@@ -147,6 +171,27 @@ public class OrderAdminPanel extends JPanel {
         }
     }
 
+    private void handleUpdateStatus() {
+        Integer orderId = getSelectedOrderId();
+        if (orderId == null) {
+            JOptionPane.showMessageDialog(this, "상태를 변경할 주문을 선택하세요.");
+            return;
+        }
+
+        String status = (String) statusCombo.getSelectedItem();
+        if (status == null || status.isBlank()) {
+            JOptionPane.showMessageDialog(this, "변경할 상태를 선택하세요.");
+            return;
+        }
+
+        boolean success = orderService.updateOrderStatus(adminUser, orderId, status);
+        if (success) {
+            loadOrders(orderId);
+        } else {
+            JOptionPane.showMessageDialog(this, "주문 상태 변경 실패 (권한 또는 상태 확인)");
+        }
+    }
+
     private Integer getSelectedOrderId() {
         int viewRow = orderTable.getSelectedRow();
         if (viewRow < 0) {
@@ -154,6 +199,45 @@ public class OrderAdminPanel extends JPanel {
         }
         int modelRow = orderTable.convertRowIndexToModel(viewRow);
         return parseIntValue(orderTableModel.getValueAt(modelRow, 0));
+    }
+
+    private String getSelectedOrderStatus() {
+        int viewRow = orderTable.getSelectedRow();
+        if (viewRow < 0) {
+            return null;
+        }
+        int modelRow = orderTable.convertRowIndexToModel(viewRow);
+        Object value = orderTableModel.getValueAt(modelRow, 4);
+        return value == null ? null : value.toString();
+    }
+
+    private void setStatusSelection(String status) {
+        if (status == null || status.isBlank()) {
+            return;
+        }
+
+        boolean found = false;
+        for (int i = 0; i < statusCombo.getItemCount(); i++) {
+            if (status.equals(statusCombo.getItemAt(i))) {
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            statusCombo.addItem(status);
+        }
+        statusCombo.setSelectedItem(status);
+    }
+
+    private Integer findRowByOrderId(int orderId) {
+        for (int row = 0; row < orderTableModel.getRowCount(); row++) {
+            int value = parseIntValue(orderTableModel.getValueAt(row, 0));
+            if (value == orderId) {
+                return row;
+            }
+        }
+        return null;
     }
 
     private int parseIntValue(Object value) {
