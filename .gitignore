@@ -25,3 +25,4 @@ Thumbs.db
 .settings/
 
 src/main/java/db.properties
+src/main/resources/
