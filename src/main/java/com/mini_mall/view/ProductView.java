@@ -4,6 +4,7 @@ import com.mini_mall.dto.ProductDTO;
 import com.mini_mall.dto.UserDTO;
 import com.mini_mall.service.ProductService;
 import com.mini_mall.service.CartService;
+import com.mini_mall.view.OrderHistoryView;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -245,6 +246,15 @@ public class ProductView extends JFrame {
             );
         });
         searchPanel.add(cartViewButton);
+        
+        // 주문 내역 버튼
+        JButton orderHistoryButton = new JButton("주문 내역");
+
+        orderHistoryButton.addActionListener(e -> {
+            new OrderHistoryView(loginUser);
+        });
+
+        searchPanel.add(orderHistoryButton);
 
         JButton logoutButton = new JButton("로그아웃");
 
