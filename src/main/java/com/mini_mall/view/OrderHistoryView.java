@@ -1,6 +1,7 @@
 package com.mini_mall.view;
 
 import com.mini_mall.dto.OrderDTO;
+import com.mini_mall.dto.OrderItemViewDTO;
 import com.mini_mall.dto.UserDTO;
 import com.mini_mall.service.OrderService;
 
@@ -11,48 +12,129 @@ import java.util.List;
 
 public class OrderHistoryView extends JFrame {
 
-    private final OrderService orderService = new OrderService();
+    private final OrderService orderService =
+            new OrderService();
 
     public OrderHistoryView(UserDTO user) {
 
         setTitle("주문 내역");
-        setSize(700, 400);
+        setSize(800, 500);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
-        // 컬럼
-        String[] columns = {
+        String[] orderColumns = {
                 "주문번호",
                 "주문날짜",
-                "상태"
+                "주문상태",
+                "총 금액"
         };
 
-        DefaultTableModel model =
+        DefaultTableModel orderModel =
                 new DefaultTableModel(
-                        columns,
+                        orderColumns,
                         0
-                );
+                ) {
+                    @Override
+                    public boolean isCellEditable(
+                            int row,
+                            int column
+                    ) {
+                        return false;
+                    }
+                };
 
-        JTable table = new JTable(model);
+        JTable orderTable = new JTable(orderModel);
 
-        // 주문 목록 조회
+        String[] detailColumns = {
+                "상품명",
+                "주문가격",
+                "수량",
+                "합계"
+        };
+
+        DefaultTableModel detailModel =
+                new DefaultTableModel(
+                        detailColumns,
+                        0
+                ) {
+                    @Override
+                    public boolean isCellEditable(
+                            int row,
+                            int column
+                    ) {
+                        return false;
+                    }
+                };
+
+        JTable detailTable = new JTable(detailModel);
+
         List<OrderDTO> orderList = orderService.getMyOrders(user);
 
         if(orderList != null) {
 
-            for(OrderDTO order : orderList) {
+            for(OrderDTO order
+                    : orderList) {
 
-                model.addRow(
+                orderModel.addRow(
                         new Object[]{
                                 order.getOrderId(),
                                 order.getOrderDate(),
-                                order.getStatus()
+                                order.getStatus(),
+                                order.getTotalPrice() + "원"
                         }
                 );
             }
         }
 
-        // 닫기 버튼
+        orderTable.getSelectionModel()
+                .addListSelectionListener(e -> {
+
+                    if(e.getValueIsAdjusting()) {
+                        return;
+                    }
+
+                    int row =
+                            orderTable.getSelectedRow();
+
+                    if(row == -1) {
+
+                        return;
+                    }
+
+                    int orderId =
+                            (int) orderModel.getValueAt(
+                                    row,
+                                    0
+                            );
+
+                    // 상세 테이블 초기화
+                    detailModel.setRowCount(0);
+
+                    // 상세 조회
+                    List<OrderItemViewDTO> detailList =
+                            orderService.getOrderDetail(
+                                    orderId
+                            );
+
+                    if(detailList != null) {
+
+                        for(OrderItemViewDTO item : detailList) {
+
+                            int total = item.getOrderPrice() * item.getOrderQuantity();
+
+                            detailModel.addRow(
+                                    new Object[]{
+
+                                            item.getProductName(),
+                                            item.getOrderPrice(),
+                                            item.getOrderQuantity(),
+                                            total
+                                    }
+                            );
+                        }
+                    }
+                });
+
         JButton closeButton = new JButton("닫기");
 
         closeButton.addActionListener(e -> {
@@ -63,16 +145,17 @@ public class OrderHistoryView extends JFrame {
 
         bottomPanel.add(closeButton);
 
-        add(
-                new JScrollPane(table),
-                BorderLayout.CENTER
-        );
+        JSplitPane splitPane =
+                new JSplitPane(
+                        JSplitPane.VERTICAL_SPLIT,
+                        new JScrollPane(orderTable),
+                        new JScrollPane(detailTable)
+                );
 
-        add(
-                bottomPanel,
-                BorderLayout.SOUTH
-        );
+        splitPane.setDividerLocation(220);
 
+        add(splitPane, BorderLayout.CENTER);
+        add(bottomPanel, BorderLayout.SOUTH);
         setVisible(true);
     }
 }

@@ -9,7 +9,7 @@ public class OrderDTO {
     private String userName;
     private Timestamp orderDate;
     private String status;
-    
+    private int totalPrice;
 
     public OrderDTO() {}
 
@@ -64,5 +64,13 @@ public class OrderDTO {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+    
+    public int getTotalPrice() {
+        return totalPrice;
+    }
+
+    public void setTotalPrice(int totalPrice) {
+        this.totalPrice = totalPrice;
     }
 }

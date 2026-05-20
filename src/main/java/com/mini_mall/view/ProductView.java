@@ -56,7 +56,7 @@ public class ProductView extends JFrame {
         this.loginUser = user;
         setTitle("상품 목록");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(800, 600);
+        setSize(1000, 600);
         setLocationRelativeTo(null);
 
         JPanel root = new JPanel(new BorderLayout(12, 12));

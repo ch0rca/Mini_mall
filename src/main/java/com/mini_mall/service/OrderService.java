@@ -59,4 +59,13 @@ public class OrderService {
                 user.getUserId()
         );
     }
+    
+    // 주문 상세 조회
+    public List<OrderItemViewDTO> getOrderDetail(
+            int orderId
+    ) {
+        return orderDAO.findOrderDetail(
+                orderId
+        );
+    }
 }

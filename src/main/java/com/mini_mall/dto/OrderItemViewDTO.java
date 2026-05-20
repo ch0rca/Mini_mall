@@ -58,4 +58,6 @@ public class OrderItemViewDTO {
     public void setOrderPrice(int orderPrice) {
         this.orderPrice = orderPrice;
     }
+    
+    
 }

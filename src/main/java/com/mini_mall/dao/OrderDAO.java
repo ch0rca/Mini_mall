@@ -119,10 +119,14 @@ public class OrderDAO {
 	) {
 
 	    String sql =
-	            "SELECT order_id, user_id, order_date, status " +
-	            "FROM Orders " +
-	            "WHERE user_id = ? " +
-	            "ORDER BY order_date DESC";
+	            "SELECT o.order_id, o.user_id, o.order_date, o.status, " +
+	            "SUM(oi.order_price * oi.order_quantity) AS total_price " +
+	            "FROM Orders o " +
+	            "JOIN Order_Item oi " +
+	            "ON o.order_id = oi.order_id " +
+	            "WHERE o.user_id = ? " +
+	            "GROUP BY o.order_id " +
+	            "ORDER BY o.order_date DESC";
 
 	    try (
 	            Connection con = DBConnection.getConnection();
@@ -130,18 +134,24 @@ public class OrderDAO {
 	    ) {
 
 	        pstmt.setInt(1, userId);
+
 	        ResultSet rs = pstmt.executeQuery();
 	        List<OrderDTO> orders = new ArrayList<>();
-
+ 
 	        while(rs.next()) {
-	            orders.add(
+
+	            OrderDTO order =
 	                    new OrderDTO(
 	                            rs.getInt("order_id"),
 	                            rs.getInt("user_id"),
 	                            rs.getTimestamp("order_date"),
 	                            rs.getString("status")
-	                    )
+	                    );
+	            // 총 금액 저장
+	            order.setTotalPrice(
+	                    rs.getInt("total_price")
 	            );
+	            orders.add(order);
 	        }
 
 	        return orders;
@@ -151,6 +161,8 @@ public class OrderDAO {
 	        return null;
 	    }
 	}
+	
+	
 
     // 주문 목록 조회 (관리자용)
     public List<OrderDTO> findAllOrders() {
@@ -229,6 +241,62 @@ public class OrderDAO {
         } catch (SQLException e) {
             e.printStackTrace();
             return 0;
+        }
+    }
+    
+    // 주문 상세 조회
+    public List<OrderItemViewDTO> findOrderDetail(
+            int orderId
+    ) {
+
+        String sql =
+                "SELECT oi.order_item_id, " +
+                "oi.product_id, " +
+                "oi.order_quantity, " +
+                "oi.order_price, " +
+                "p.product_name " +
+                "FROM Order_Item oi " +
+                "JOIN Product p " +
+                "ON oi.product_id = p.product_id " +
+                "WHERE oi.order_id = ?";
+
+        try (
+                Connection con =
+                        DBConnection.getConnection();
+
+                PreparedStatement pstmt =
+                        con.prepareStatement(sql)
+        ) {
+
+            pstmt.setInt(1, orderId);
+
+            ResultSet rs =
+                    pstmt.executeQuery();
+
+            List<OrderItemViewDTO> list =
+                    new ArrayList<>();
+
+            while(rs.next()) {
+
+                OrderItemViewDTO dto =
+                        new OrderItemViewDTO(
+                                rs.getInt("order_item_id"),
+                                rs.getInt("product_id"),
+                                rs.getString("product_name"),
+                                rs.getInt("order_quantity"),
+                                rs.getInt("order_price")
+                        );
+
+                list.add(dto);
+            }
+
+            return list;
+
+        } catch(Exception e) {
+
+            e.printStackTrace();
+
+            return null;
         }
     }
 }
