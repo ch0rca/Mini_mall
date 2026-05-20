@@ -12,9 +12,12 @@ import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.text.Collator;
 import java.util.List;
+import java.util.Locale;
 
 public class UserAdminPanel extends JPanel {
 
@@ -27,6 +30,16 @@ public class UserAdminPanel extends JPanel {
         @Override
         public boolean isCellEditable(int row, int column) {
             return false;
+        }
+
+        @Override
+        public Class<?> getColumnClass(int columnIndex) {
+            switch (columnIndex) {
+                case 0:
+                    return Integer.class;
+                default:
+                    return String.class;
+            }
         }
     };
     private final JTable userTable = new JTable(userTableModel);
@@ -43,8 +56,14 @@ public class UserAdminPanel extends JPanel {
         header.add(refreshButton);
 
         userTable.setRowHeight(28);
-        userTable.setAutoCreateRowSorter(true);
         userTable.getTableHeader().setReorderingAllowed(false);
+
+        TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(userTableModel);
+        Collator collator = Collator.getInstance(Locale.KOREAN);
+        sorter.setComparator(1, collator);
+        sorter.setComparator(2, collator);
+        sorter.setComparator(3, collator);
+        userTable.setRowSorter(sorter);
 
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);

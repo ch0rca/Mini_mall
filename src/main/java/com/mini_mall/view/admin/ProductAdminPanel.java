@@ -14,11 +14,14 @@ import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Frame;
+import java.text.Collator;
 import java.util.List;
+import java.util.Locale;
 
 public class ProductAdminPanel extends JPanel {
 
@@ -31,6 +34,18 @@ public class ProductAdminPanel extends JPanel {
         @Override
         public boolean isCellEditable(int row, int column) {
             return false;
+        }
+
+        @Override
+        public Class<?> getColumnClass(int columnIndex) {
+            switch (columnIndex) {
+                case 0:
+                case 2:
+                case 3:
+                    return Integer.class;
+                default:
+                    return String.class;
+            }
         }
     };
     private final JTable productTable = new JTable(productTableModel);
@@ -76,8 +91,13 @@ public class ProductAdminPanel extends JPanel {
 
     private JPanel createProductTablePanel() {
         productTable.setRowHeight(28);
-        productTable.setAutoCreateRowSorter(true);
         productTable.getTableHeader().setReorderingAllowed(false);
+
+        TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(productTableModel);
+        Collator collator = Collator.getInstance(Locale.KOREAN);
+        sorter.setComparator(1, collator);
+        sorter.setComparator(4, collator);
+        productTable.setRowSorter(sorter);
 
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);

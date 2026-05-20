@@ -17,9 +17,12 @@ import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.text.Collator;
 import java.util.List;
+import java.util.Locale;
 
 public class OrderAdminPanel extends JPanel {
 
@@ -40,6 +43,19 @@ public class OrderAdminPanel extends JPanel {
         public boolean isCellEditable(int row, int column) {
             return false;
         }
+
+        @Override
+        public Class<?> getColumnClass(int columnIndex) {
+            switch (columnIndex) {
+                case 0:
+                case 1:
+                    return Integer.class;
+                case 3:
+                    return java.sql.Timestamp.class;
+                default:
+                    return String.class;
+            }
+        }
     };
     private final JTable orderTable = new JTable(orderTableModel);
 
@@ -49,6 +65,19 @@ public class OrderAdminPanel extends JPanel {
         @Override
         public boolean isCellEditable(int row, int column) {
             return false;
+        }
+
+        @Override
+        public Class<?> getColumnClass(int columnIndex) {
+            switch (columnIndex) {
+                case 0:
+                case 1:
+                case 3:
+                case 4:
+                    return Integer.class;
+                default:
+                    return String.class;
+            }
         }
     };
     private final JTable orderItemTable = new JTable(orderItemTableModel);
@@ -76,8 +105,13 @@ public class OrderAdminPanel extends JPanel {
         header.add(updateButton);
 
         orderTable.setRowHeight(28);
-        orderTable.setAutoCreateRowSorter(true);
         orderTable.getTableHeader().setReorderingAllowed(false);
+
+        TableRowSorter<DefaultTableModel> orderSorter = new TableRowSorter<>(orderTableModel);
+        Collator collator = Collator.getInstance(Locale.KOREAN);
+        orderSorter.setComparator(2, collator);
+        orderSorter.setComparator(4, collator);
+        orderTable.setRowSorter(orderSorter);
 
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
@@ -87,8 +121,12 @@ public class OrderAdminPanel extends JPanel {
         orderTable.getColumnModel().getColumn(4).setCellRenderer(centerRenderer);
 
         orderItemTable.setRowHeight(26);
-        orderItemTable.setAutoCreateRowSorter(true);
         orderItemTable.getTableHeader().setReorderingAllowed(false);
+
+        TableRowSorter<DefaultTableModel> orderItemSorter =
+            new TableRowSorter<>(orderItemTableModel);
+        orderItemSorter.setComparator(2, collator);
+        orderItemTable.setRowSorter(orderItemSorter);
         orderItemTable.getColumnModel().getColumn(0).setCellRenderer(centerRenderer);
         orderItemTable.getColumnModel().getColumn(1).setCellRenderer(centerRenderer);
         orderItemTable.getColumnModel().getColumn(3).setCellRenderer(centerRenderer);
@@ -139,14 +177,18 @@ public class OrderAdminPanel extends JPanel {
         }
 
         if (!orders.isEmpty()) {
-            int rowToSelect = 0;
+            int modelRow = 0;
             if (selectOrderId != null) {
                 Integer foundRow = findRowByOrderId(selectOrderId);
                 if (foundRow != null) {
-                    rowToSelect = foundRow;
+                    modelRow = foundRow;
                 }
             }
-            orderTable.setRowSelectionInterval(rowToSelect, rowToSelect);
+
+            int viewRow = orderTable.convertRowIndexToView(modelRow);
+            if (viewRow >= 0) {
+                orderTable.setRowSelectionInterval(viewRow, viewRow);
+            }
         }
     }
 

@@ -9,8 +9,11 @@ import com.mini_mall.view.OrderHistoryView;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
 import java.awt.*;
+import java.text.Collator;
 import java.util.List;
+import java.util.Locale;
 
 public class ProductView extends JFrame {
 
@@ -40,6 +43,18 @@ public class ProductView extends JFrame {
                         int column
                 ) {
                     return false;
+                }
+
+                @Override
+                public Class<?> getColumnClass(int columnIndex) {
+                    switch (columnIndex) {
+                        case 0:
+                        case 2:
+                        case 3:
+                            return Integer.class;
+                        default:
+                            return String.class;
+                    }
                 }
             };
 
@@ -81,14 +96,15 @@ public class ProductView extends JFrame {
 
                     if (!e.getValueIsAdjusting() && productTable.getSelectedRow() >= 0) {
 
-                        int row = productTable.getSelectedRow();
+                        int viewRow = productTable.getSelectedRow();
+                        int modelRow = productTable.convertRowIndexToModel(viewRow);
 
                         int productId = Integer.parseInt(
-                        		tableModel.getValueAt(
-                                                row,
-                                                0
-                                        ).toString()
-                                );
+                                tableModel.getValueAt(
+                                        modelRow,
+                                        0
+                                ).toString()
+                        );
 
                         productIdField.setText( String.valueOf(productId));
 
@@ -152,10 +168,10 @@ public class ProductView extends JFrame {
         JButton addCartButton = new JButton("장바구니 담기");
 
         addCartButton.addActionListener(e -> {
-            int row = productTable.getSelectedRow();
+            int viewRow = productTable.getSelectedRow();
 
             // 선택 안 한 경우
-            if(row == -1) {
+            if(viewRow == -1) {
                 JOptionPane.showMessageDialog(
                         this,
                         "상품을 선택하세요."
@@ -163,11 +179,13 @@ public class ProductView extends JFrame {
                 return;
             }
 
+            int modelRow = productTable.convertRowIndexToModel(viewRow);
+
             // 상품 ID
             int productId =
                     Integer.parseInt(
                             tableModel.getValueAt(
-                                    row,
+                                    modelRow,
                                     0
                             ).toString()
                     );
@@ -274,8 +292,14 @@ public class ProductView extends JFrame {
 
         productTable.setRowHeight(28);
         productTable.setFillsViewportHeight(true);
-        productTable.setAutoCreateRowSorter(true);
         productTable.getTableHeader().setReorderingAllowed(false);
+
+        TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(tableModel);
+        Collator collator = Collator.getInstance(Locale.KOREAN);
+        sorter.setComparator(1, collator);
+        sorter.setComparator(4, collator);
+        productTable.setRowSorter(sorter);
+
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
 
         centerRenderer.setHorizontalAlignment(
