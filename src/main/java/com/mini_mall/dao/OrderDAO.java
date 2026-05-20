@@ -112,6 +112,45 @@ public class OrderDAO {
 	        }
 	    }
 	}
+	
+	// 주문 목록 조회 (사용자용)
+	public List<OrderDTO> findOrdersByUserId(
+	        int userId
+	) {
+
+	    String sql =
+	            "SELECT order_id, user_id, order_date, status " +
+	            "FROM Orders " +
+	            "WHERE user_id = ? " +
+	            "ORDER BY order_date DESC";
+
+	    try (
+	            Connection con = DBConnection.getConnection();
+	            PreparedStatement pstmt = con.prepareStatement(sql)
+	    ) {
+
+	        pstmt.setInt(1, userId);
+	        ResultSet rs = pstmt.executeQuery();
+	        List<OrderDTO> orders = new ArrayList<>();
+
+	        while(rs.next()) {
+	            orders.add(
+	                    new OrderDTO(
+	                            rs.getInt("order_id"),
+	                            rs.getInt("user_id"),
+	                            rs.getTimestamp("order_date"),
+	                            rs.getString("status")
+	                    )
+	            );
+	        }
+
+	        return orders;
+
+	    } catch(Exception e) {
+	        e.printStackTrace();
+	        return null;
+	    }
+	}
 
     // 주문 목록 조회 (관리자용)
     public List<OrderDTO> findAllOrders() {

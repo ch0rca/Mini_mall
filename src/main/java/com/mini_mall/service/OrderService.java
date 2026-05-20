@@ -52,4 +52,11 @@ public class OrderService {
     private boolean isAdmin(UserDTO user) {
         return user != null && "ADMIN".equals(user.getRole());
     }
+    
+    // 내 주문 내역 조회
+    public List<OrderDTO> getMyOrders(UserDTO user) {
+        return orderDAO.findOrdersByUserId(
+                user.getUserId()
+        );
+    }
 }
