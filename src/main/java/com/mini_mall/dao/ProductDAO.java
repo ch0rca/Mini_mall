@@ -118,4 +118,29 @@ public class ProductDAO {
             return 0;
         }
     }
+    
+    // 재고 감소
+    public boolean decreaseStock(Connection con,
+                                 int productId,
+                                 int quantity) {
+
+        String sql =
+                "UPDATE Product " +
+                "SET stock = stock - ? " +
+                "WHERE product_id = ? " +
+                "AND stock >= ?";
+
+        try(PreparedStatement pstmt = con.prepareStatement(sql)) {
+
+            pstmt.setInt(1, quantity);
+            pstmt.setInt(2, productId);
+            pstmt.setInt(3, quantity);
+
+            return pstmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }
