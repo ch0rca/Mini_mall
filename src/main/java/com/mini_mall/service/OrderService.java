@@ -1,8 +1,8 @@
 package com.mini_mall.service;
 
 import com.mini_mall.dao.OrderDAO;
-import com.mini_mall.dto.OrderDTO;
-import com.mini_mall.dto.OrderItemDTO;
+import com.mini_mall.dto.OrderItemViewDTO;
+import com.mini_mall.dto.OrderSummaryDTO;
 import com.mini_mall.dto.UserDTO;
 
 import java.util.List;
@@ -12,7 +12,7 @@ public class OrderService {
     private final OrderDAO orderDAO = new OrderDAO();
 
     // 주문 목록 조회 (관리자만)
-    public List<OrderDTO> getOrderList(UserDTO user) {
+    public List<OrderSummaryDTO> getOrderList(UserDTO user) {
         if (!isAdmin(user)) {
             return null;
         }
@@ -20,7 +20,7 @@ public class OrderService {
     }
 
     // 주문별 상품 조회 (관리자만)
-    public List<OrderItemDTO> getOrderItems(UserDTO user, int orderId) {
+    public List<OrderItemViewDTO> getOrderItems(UserDTO user, int orderId) {
         if (!isAdmin(user)) {
             return null;
         }
