@@ -3,8 +3,8 @@ package com.mini_mall.dao;
 
 import com.mini_mall.DBConnection;
 import com.mini_mall.dto.CartDTO;
+import com.mini_mall.dto.OrderDTO;
 import com.mini_mall.dto.OrderItemViewDTO;
-import com.mini_mall.dto.OrderSummaryDTO;
 import com.mini_mall.dao.ProductDAO;
 
 import java.sql.Connection;
@@ -114,7 +114,7 @@ public class OrderDAO {
 	}
 
     // 주문 목록 조회 (관리자용)
-    public List<OrderSummaryDTO> findAllOrders() {
+    public List<OrderDTO> findAllOrders() {
         String sql = "SELECT o.order_id, o.user_id, u.name AS user_name, " +
                      "o.order_date, o.status " +
                      "FROM Orders o " +
@@ -125,9 +125,9 @@ public class OrderDAO {
              PreparedStatement pstmt = con.prepareStatement(sql);
              ResultSet rs = pstmt.executeQuery()) {
 
-            List<OrderSummaryDTO> orders = new ArrayList<>();
+            List<OrderDTO> orders = new ArrayList<>();
             while (rs.next()) {
-                orders.add(new OrderSummaryDTO(
+                orders.add(new OrderDTO(
                     rs.getInt("order_id"),
                     rs.getInt("user_id"),
                     rs.getString("user_name"),

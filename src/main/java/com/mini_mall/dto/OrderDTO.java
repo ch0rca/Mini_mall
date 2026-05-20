@@ -6,14 +6,21 @@ public class OrderDTO {
 
     private int orderId;
     private int userId;
+    private String userName;
     private Timestamp orderDate;
     private String status;
 
     public OrderDTO() {}
 
     public OrderDTO(int orderId, int userId, Timestamp orderDate, String status) {
+        this(orderId, userId, null, orderDate, status);
+    }
+
+    public OrderDTO(int orderId, int userId, String userName,
+                    Timestamp orderDate, String status) {
         this.orderId = orderId;
         this.userId = userId;
+        this.userName = userName;
         this.orderDate = orderDate;
         this.status = status;
     }
@@ -32,6 +39,14 @@ public class OrderDTO {
 
     public void setUserId(int userId) {
         this.userId = userId;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public Timestamp getOrderDate() {

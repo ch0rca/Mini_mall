@@ -1,8 +1,8 @@
 package com.mini_mall.service;
 
 import com.mini_mall.dao.OrderDAO;
+import com.mini_mall.dto.OrderDTO;
 import com.mini_mall.dto.OrderItemViewDTO;
-import com.mini_mall.dto.OrderSummaryDTO;
 import com.mini_mall.dto.UserDTO;
 import com.mini_mall.dto.CartDTO;
 
@@ -26,7 +26,7 @@ public class OrderService {
     }
 
     // 주문 목록 조회 (관리자만)
-    public List<OrderSummaryDTO> getOrderList(UserDTO user) {
+    public List<OrderDTO> getOrderList(UserDTO user) {
         if (!isAdmin(user)) {
             return null;
         }

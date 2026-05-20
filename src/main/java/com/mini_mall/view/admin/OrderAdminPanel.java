@@ -1,7 +1,7 @@
 package com.mini_mall.view.admin;
 
+import com.mini_mall.dto.OrderDTO;
 import com.mini_mall.dto.OrderItemViewDTO;
-import com.mini_mall.dto.OrderSummaryDTO;
 import com.mini_mall.dto.UserDTO;
 import com.mini_mall.service.OrderService;
 
@@ -118,7 +118,7 @@ public class OrderAdminPanel extends JPanel {
     }
 
     private void loadOrders(Integer selectOrderId) {
-        List<OrderSummaryDTO> orders = orderService.getOrderList(adminUser);
+        List<OrderDTO> orders = orderService.getOrderList(adminUser);
         orderTableModel.setRowCount(0);
         orderItemTableModel.setRowCount(0);
 
@@ -127,7 +127,7 @@ public class OrderAdminPanel extends JPanel {
             return;
         }
 
-        for (OrderSummaryDTO order : orders) {
+        for (OrderDTO order : orders) {
             String userName = order.getUserName() == null ? "-" : order.getUserName();
             orderTableModel.addRow(new Object[]{
                 order.getOrderId(),
