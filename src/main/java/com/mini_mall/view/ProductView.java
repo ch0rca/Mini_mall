@@ -146,15 +146,14 @@ public class ProductView extends JFrame {
         );
 
         searchPanel.add(refreshButton);
+     
         
-     // 장바구니 담기 버튼
         JButton addCartButton = new JButton("장바구니 담기");
 
         addCartButton.addActionListener(e -> {
-
             int row = productTable.getSelectedRow();
 
-            // 상품 선택 안 한 경우
+            // 선택 안 한 경우
             if(row == -1) {
                 JOptionPane.showMessageDialog(
                         this,
@@ -163,11 +162,13 @@ public class ProductView extends JFrame {
                 return;
             }
 
-            // 상품 ID 가져오기
+            // 상품 ID
             int productId =
                     Integer.parseInt(
-                            tableModel.getValueAt(row, 0)
-                                    .toString()
+                            tableModel.getValueAt(
+                                    row,
+                                    0
+                            ).toString()
                     );
 
             // 상품 조회
@@ -183,6 +184,7 @@ public class ProductView extends JFrame {
                             "수량 입력"
                     );
 
+            // 취소
             if(input == null) {
                 return;
             }
@@ -190,13 +192,21 @@ public class ProductView extends JFrame {
             int quantity;
 
             try {
-
                 quantity = Integer.parseInt(input);
 
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(
                         this,
                         "숫자를 입력하세요."
+                );
+                return;
+            }
+
+            // 수량 검사
+            if(quantity <= 0) {
+                JOptionPane.showMessageDialog(
+                        this,
+                        "1개 이상 입력하세요."
                 );
                 return;
             }
@@ -211,7 +221,10 @@ public class ProductView extends JFrame {
             }
 
             // 장바구니 추가
-            cartService.addToCart(product, quantity);
+            cartService.addToCart(
+                    product,
+                    quantity
+            );
 
             JOptionPane.showMessageDialog(
                     this,
@@ -221,13 +234,16 @@ public class ProductView extends JFrame {
 
         searchPanel.add(addCartButton);
 
-        // 장바구니 보기 버튼
-        JButton cartViewButton = new JButton("장바구니");
+
+        JButton cartViewButton = new JButton("내 장바구니");
 
         cartViewButton.addActionListener(e -> {
-            new CartView(cartService);
+            new CartView(
+                    cartService,
+                    loginUser,
+                    this
+            );
         });
-
         searchPanel.add(cartViewButton);
 
         JButton logoutButton = new JButton("로그아웃");
@@ -352,7 +368,7 @@ public class ProductView extends JFrame {
 
                     product.getProductId(),
                     product.getProductName(),
-                    product.getPrice(),
+                    product.getPrice(),	
                     product.getStock(),
                     statusForStock(product.getStock())
             });
@@ -394,9 +410,12 @@ public class ProductView extends JFrame {
 
     // 재고 상태
     private String statusForStock(int stock) {
-
         return stock == 0
                 ? "품절"
                 : "판매중";
+    }
+    
+    public void refreshProductTable() {
+        loadProducts();
     }
 }
