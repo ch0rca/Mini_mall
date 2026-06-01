@@ -31,7 +31,7 @@ public class DBConnection {
             config.setPassword(props.getProperty("db.password"));
             
             // 고정 풀 사이즈 설정 (최적화 권장사항 반영)
-            int poolSize = Integer.parseInt(props.getProperty("db.pool.max", "10"));
+            int poolSize = Integer.parseInt(props.getProperty("db.pool.max", "16"));
             config.setMaximumPoolSize(poolSize);
             config.setMinimumIdle(poolSize);
 
