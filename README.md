@@ -222,6 +222,7 @@ db.url=jdbc:mysql://127.0.0.1:3306/minidb?serverTimezone=Asia/Seoul&useSSL=false
 
 db.user=your_id
 db.password=your_password
+db.pool.size=your_pool_size
 ```
 
 ---
@@ -245,8 +246,11 @@ CREATE DATABASE minidb;
 ## 3. db.properties 설정
 
 ```properties
-db.user=본인계정
-db.password=본인비밀번호
+db.url=jdbc:mysql://127.0.0.1:3306/minidb?serverTimezone=Asia/Seoul&useSSL=false&allowPublicKeyRetrieval=true
+
+db.user=your_id
+db.password=your_password
+db.pool.size=your_pool_size
 ```
 
 ---

@@ -29,11 +29,9 @@ public class DBConnection {
             config.setJdbcUrl(props.getProperty("db.url"));
             config.setUsername(props.getProperty("db.user"));
             config.setPassword(props.getProperty("db.password"));
-            
-            // 고정 풀 사이즈 설정 (최적화 권장사항 반영)
-            int poolSize = Integer.parseInt(props.getProperty("db.pool.max", "16"));
+
+            int poolSize = Integer.parseInt(props.getProperty("db.pool.size", "16"));
             config.setMaximumPoolSize(poolSize);
-            config.setMinimumIdle(poolSize);
 
             dataSource = new HikariDataSource(config);
 
