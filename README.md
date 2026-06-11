@@ -154,7 +154,7 @@ mini_mall
 
 # 🔄 주문 처리 로직
 
-주문 시 다음 과정이 하나의 흐름으로 처리됩니다.
+주문 시 다음 과정이 하나의 흐름으로 처리
 
 1. Orders 테이블 생성
 2. Order_Item 데이터 생성
@@ -207,13 +207,13 @@ mini_mall
 | USER | 일반 사용자 |
 | ADMIN | 관리자 |
 
-로그인 시 role 값을 확인하여 화면을 분기합니다.
+로그인 시 role 값을 확인하여 화면을 분기
 
 ---
 
 # ⚙ DB 설정
 
-보안을 위해 DB 접속 정보는 `db.properties` 파일로 분리하였습니다.
+보안을 위해 DB 접속 정보는 `db.properties` 파일로 분리
 
 ## db.properties
 
